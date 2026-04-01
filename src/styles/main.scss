@@ -1,0 +1,57 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url('../assets/fond-F1.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #0D0D0F;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 20, 0.82);
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+nav {
+  background: rgba(15, 27, 45, 0.95) !important;
+  border-bottom: 2px solid #E8002D;
+
+  .navbar-brand img {
+    height: 40px;
+  }
+
+  .nav-link {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-left: 1rem;
+
+    &:hover {
+      color: #E8002D !important;
+    }
+  }
+
+  .navbar-toggler {
+    border-color: #E8002D;
+
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+  }
+}
