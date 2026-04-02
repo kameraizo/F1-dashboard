@@ -25,3 +25,7 @@ export const getRaces = async () => {
   const response = await api.get('/2026/races.json')
   return response.data
 }
+export const getRaceResults = async (round) => {
+  const response = await api.get(`/2026/${round}/results.json`)
+  return response.data
+}
