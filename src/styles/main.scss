@@ -139,3 +139,40 @@ nav {
     padding-top: 0.75rem;
   }
 }
+.tab-buttons {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+
+  button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #8B9AB0;
+    padding: 0.6rem 2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    &:hover {
+      color: #ffffff;
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    &.active {
+      background: #E8002D;
+      border-color: #E8002D;
+      color: #ffffff;
+    }
+  }
+}
