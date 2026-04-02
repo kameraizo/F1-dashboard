@@ -9,6 +9,7 @@ const teamColors = {
   haas:         '#B6BABD',
   rb:           '#6692FF',
   sauber:       '#52E252',
+  audi:         '#BB0000',
   cadillac:     '#C0C0C0', // chrome/argent
 }
 function ConstructorCard({ standing }) {
