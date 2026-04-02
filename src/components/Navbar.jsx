@@ -1,11 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
+import logo from "../assets/Logo-F1.png"
 
 function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
-          <img src="/src/assets/Logo-F1.png" alt="F1 Dashboard" height="40" />
+          <img src={logo} alt="F1 Dashboard" height="40" />
         </Link>
 
         <button
