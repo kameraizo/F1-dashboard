@@ -176,3 +176,59 @@ nav {
     }
   }
 }
+.race-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0F1B2D;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 1rem 1.5rem;
+  margin-bottom: 0.75rem;
+
+  &.past {
+    opacity: 0.6;
+  }
+
+  .race-round {
+    font-size: 13px;
+    color: #E8002D;
+    font-weight: 700;
+    min-width: 60px;
+  }
+
+  .race-name {
+    font-size: 15px;
+    color: #ffffff;
+    font-weight: 500;
+    flex: 1;
+    margin: 0 1rem;
+  }
+
+  .race-date {
+    font-size: 13px;
+    color: #8B9AB0;
+    min-width: 120px;
+    text-align: right;
+  }
+
+  .badge-past {
+    background: rgba(232, 0, 45, 0.15);
+    color: #E8002D;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 1rem;
+  }
+
+  .badge-upcoming {
+    background: rgba(54, 113, 198, 0.15);
+    color: #64C4FF;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 1rem;
+  }
+}
