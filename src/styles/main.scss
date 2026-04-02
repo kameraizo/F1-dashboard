@@ -56,11 +56,18 @@ nav {
   }
 }
 .driver-card {
+  cursor: pointer;
+  transition: all 0.2s;
   background: #0F1B2D;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
   min-width: 180px;
+
+  &:hover {
+    border-color: #E8002D;
+    transform: translateY(-3px);
+  }
 
   .card-top {
     height: 6px;
@@ -322,4 +329,7 @@ nav {
       color: #E8002D;
     }
   }
+}
+.constructor-card{
+  cursor: pointer;;
 }

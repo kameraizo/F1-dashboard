@@ -13,13 +13,13 @@ const teamColors = {
   cadillac:     '#C0C0C0', // chrome/argent
 }
 
-function DriverCard({ standing }) {
+function DriverCard({ standing, onClick }) {
   const { position, points, wins, Driver, Constructors, Constructor } = standing
 const teamId = Constructors ? Constructors[0].constructorId : Constructor.constructorId
 const color = teamColors[teamId] || '#ffffff'
 
   return (
-    <div className="driver-card">
+    <div className="driver-card" onClick={onClick}>
       <div className="card-top" style={{ background: color }}></div>
       <div className="card-body">
         <div className="driver-number" style={{ color }}>{Driver.permanentNumber}</div>
