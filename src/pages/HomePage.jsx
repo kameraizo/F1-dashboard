@@ -39,10 +39,10 @@ function HomePage() {
   }, [])
 
   return (
-    <div className="container">
+    <div className="container py-4">
 
       <h2 className="text-white text-center mb-4">Championnat 2026 — Top 3</h2>
-      <div className="d-flex gap-3 justify-content-center">
+      <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
         {drivers.slice(0, 3).map((standing) => (
           <DriverCard
             key={standing.Driver.driverId}
@@ -59,7 +59,7 @@ function HomePage() {
       <h2 className="text-white text-center mb-4 mt-5">
         Top 3 — {lastRace?.raceName}
       </h2>
-      <div className="d-flex gap-3 justify-content-center">
+      <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
         {lastRace?.Results?.slice(0, 3).map((result) => (
           <DriverCard
             key={result.Driver.driverId}
