@@ -334,3 +334,14 @@ nav {
 .constructor-card{
   cursor: pointer;;
 }
+.title-gradient {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  background: linear-gradient(90deg, #ffffff 0%, #E8002D 50%, #FF6B35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

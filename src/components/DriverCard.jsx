@@ -17,7 +17,12 @@ function DriverCard({ standing, onClick }) {
   const { position, points, wins, Driver, Constructors, Constructor } = standing
 const teamId = Constructors ? Constructors[0].constructorId : Constructor.constructorId
 const color = teamColors[teamId] || '#ffffff'
-
+const positionColors = {
+  '1': '#FFD700',  // Or
+  '2': '#C0C0C0',  // Argent
+  '3': '#CD7F32',  // Bronze
+}
+const posColor = positionColors[position] || '#8B9AB0'
   return (
     <div className="driver-card" onClick={onClick}>
       <div className="card-top" style={{ background: color }}></div>
@@ -28,7 +33,14 @@ const color = teamColors[teamId] || '#ffffff'
         <div className="driver-meta">
           <span>{Driver.nationality}</span>
           <span>{points} pts</span>
-          <span>P{position}</span>
+          <span style={{ 
+            color: posColor, 
+            fontSize: '22px', 
+            fontWeight: '700',
+            textShadow: `0 0 10px ${posColor}` 
+          }}>
+           P{position}
+</span>
         </div>
       </div>
     </div>

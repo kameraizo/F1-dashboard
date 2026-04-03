@@ -26,7 +26,7 @@ function SeasonPage() {
 
   return (
     <div className="container mt-4">
-      <h2 style={{ color: 'white' }} className="mb-4">Saison 2026</h2>
+      <h2 className="title-gradient text-center mb-4">Saison 2026 — Top 3</h2>
 
       {races.map((race) => {
         const today = new Date()

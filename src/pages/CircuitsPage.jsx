@@ -26,6 +26,33 @@ const countryFlags = {
   'Las Vegas': 'us',
 }
 
+const circuitMaps = {
+  albert_park:   '/circuits/albert_park.svg',
+  shanghai:      '/circuits/shanghai.svg',
+  suzuka:        '/circuits/suzuka.svg',
+  bahrain:       '/circuits/bahrain.svg',
+  jeddah:        '/circuits/jeddah.svg',
+  miami:         '/circuits/miami.svg',
+  imola:         '/circuits/imola.svg',
+  monaco:        '/circuits/monaco.svg',
+  catalunya:     '/circuits/catalunya.svg',
+  villeneuve:    '/circuits/villeneuve.svg',
+  red_bull_ring: '/circuits/red_bull_ring.svg',
+  silverstone:   '/circuits/silverstone.svg',
+  spa:           '/circuits/spa.svg',
+  hungaroring:   '/circuits/hungaroring.svg',
+  zandvoort:     '/circuits/zandvoort.svg',
+  monza:         '/circuits/monza.svg',
+  baku:          '/circuits/baku.svg',
+  marina_bay:    '/circuits/marina_bay.svg',
+  americas:      '/circuits/americas.svg',
+  rodriguez:     '/circuits/rodriguez.svg',
+  interlagos:    '/circuits/interlagos.svg',
+  vegas:         '/circuits/vegas.svg',
+  losail:        '/circuits/losail.svg',
+  yas_marina:    '/circuits/yas_marina.svg',
+}
+
 function CircuitsPage() {
   const [races, setRaces] = useState([])
   const [selectedRace, setSelectedRace] = useState(null)
@@ -40,7 +67,7 @@ function CircuitsPage() {
 
   return (
     <div className="container mt-4">
-      <h2 style={{ color: 'white' }} className="mb-4">Circuits 2026</h2>
+      <h2 className="title-gradient text-center mb-4">Circuits 2026 — Top 3</h2>
 
       <div className="d-flex flex-wrap gap-3 justify-content-center">
         {races.map((race) => {
@@ -69,8 +96,15 @@ function CircuitsPage() {
             <img
               src={`https://flagcdn.com/w80/${countryFlags[selectedRace.Circuit.Location.country] || 'un'}.png`}
               alt={selectedRace.Circuit.Location.country}
-              className="circuit-flag mb-3"
+              style={{ width: '80px', borderRadius: '4px', marginBottom: '1rem' }}
             />
+            {circuitMaps[selectedRace.Circuit.circuitId] && (
+              <img
+                src={circuitMaps[selectedRace.Circuit.circuitId]}
+                alt={selectedRace.Circuit.circuitName}
+                style={{ width: '200px', margin: '0 auto 1rem', display: 'block' }}
+              />
+            )}
             <h3>{selectedRace.raceName}</h3>
             <p>{selectedRace.Circuit.circuitName}</p>
             <p>{selectedRace.Circuit.Location.locality}, {selectedRace.Circuit.Location.country}</p>
