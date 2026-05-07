@@ -102,7 +102,12 @@ function StandingsPage() {
             <p>{selectedDriver.points} pts — {selectedDriver.wins} victoires</p>
             <p>Né le {selectedDriver.Driver.dateOfBirth}</p>
             <p>P{selectedDriver.position} au championnat</p>
-            <table style={{ width: '100%', marginTop: '1rem', fontSize: '0.85rem' }}>
+            <table style={{ width: '100%', marginTop: '1rem', fontSize: '0.85rem', tableLayout: 'fixed' }}>
+              <colgroup>
+                <col style={{ width: '60%' }} />
+                <col style={{ width: '20%' }} />
+                <col style={{ width: '20%' }} />
+              </colgroup>
   <thead>
     <tr style={{ color: '#8B9AB0' }}>
       <th style={{ textAlign: 'center' }}>GP</th>
