@@ -12,13 +12,13 @@ const teamColors = {
   audi:         '#BB0000',
   cadillac:     '#C0C0C0', // chrome/argent
 }
-function ConstructorCard({ standing }) {
+function ConstructorCard({ standing, onClick }) {
   const { position, points, wins, Constructor } = standing
   const teamId = Constructor.constructorId
   const color = teamColors[teamId] || '#ffffff'
 
   return (
-    <div className="driver-card">
+    <div className="driver-card" onClick={onClick} style={{ cursor: 'pointer' }}>
       <div className="card-top" style={{ background: color }}></div>
       <div className="card-body">
         <div className="driver-number" style={{ color }}>{Constructor.name}</div>  
