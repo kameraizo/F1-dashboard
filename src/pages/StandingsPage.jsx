@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { getDriverStandings, getConstructorStandings } from '../services/api'
 import DriverCard from '../components/DriverCard'
 import ConstructorCard from '../components/ConstructorCard'
+import { getDriverStandings, getConstructorStandings, getDriverResults } from '../services/api'
 
 const teamColors = {
   mclaren:      '#FF8000',
@@ -23,6 +23,7 @@ function StandingsPage() {
   const [drivers, setDrivers] = useState([])
   const [constructors, setConstructors] = useState([])
   const [selectedDriver, setSelectedDriver] = useState(null)
+  const [driverResults, setDriverResults] = useState([])
 
   useEffect(() => {
     const fetchStandings = async () => {
@@ -57,7 +58,11 @@ function StandingsPage() {
             <DriverCard
               key={standing.Driver.driverId}
               standing={standing}
-              onClick={() => setSelectedDriver(standing)}
+              onClick={async () => {
+     setSelectedDriver(standing)
+     const data = await getDriverResults(standing.Driver.driverId)
+     setDriverResults(data.MRData.RaceTable.Races)
+            }}
             />
           ))}
         </div>
@@ -88,6 +93,24 @@ function StandingsPage() {
             <p>{selectedDriver.points} pts — {selectedDriver.wins} victoires</p>
             <p>Né le {selectedDriver.Driver.dateOfBirth}</p>
             <p>P{selectedDriver.position} au championnat</p>
+            <table style={{ width: '100%', marginTop: '1rem', fontSize: '0.85rem' }}>
+  <thead>
+    <tr style={{ color: '#8B9AB0' }}>
+      <th>GP</th>
+      <th>Pos</th>
+      <th>Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    {driverResults.map((race) => (
+      <tr key={race.round}>
+        <td>{race.raceName}</td>
+        <td>{race.Results[0].position}</td>
+        <td>{race.Results[0].points}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
           </div>
         </div>
       )}
