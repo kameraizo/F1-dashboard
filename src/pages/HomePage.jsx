@@ -63,7 +63,7 @@ function HomePage() {
       </div>
 
       <div className="d-flex flex-column flex-md-row gap-3 justify-content-center mt-5 align-items-center">
-        {lastRace && <GPCard race={lastRace} label="Dernier GP" />}
+        {lastRace && <GPCard race={lastRace} label="Dernier GP"  winner={lastRaceWithResults?.Results?.[0]} />}
         {lastRace && nextRace && (
           <div style={{ color: '#E8002D', fontSize: '2rem', fontWeight: '700' }}>→</div>
         )}
