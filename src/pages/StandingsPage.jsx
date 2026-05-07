@@ -24,22 +24,25 @@ function StandingsPage() {
   const [constructors, setConstructors] = useState([])
   const [selectedDriver, setSelectedDriver] = useState(null)
   const [driverResults, setDriverResults] = useState([])
+  const [selectedConstructor, setSelectedConstructor] = useState(null)
+  const [allDrivers, setAllDrivers] = useState([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-  const fetchStandings = async () => {
-    setLoading(true)
-    if (activeTab === 'drivers') {
-      const data = await getDriverStandings()
-      setDrivers(data.MRData.StandingsTable.StandingsLists[0].DriverStandings)
-    } else {
-      const data = await getConstructorStandings()
-      setConstructors(data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+    const fetchStandings = async () => {
+      setLoading(true)
+      const driversData = await getDriverStandings()
+      setAllDrivers(driversData.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+      if (activeTab === 'drivers') {
+        setDrivers(driversData.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+      } else {
+        const data = await getConstructorStandings()
+        setConstructors(data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+      }
+      setLoading(false)
     }
-    setLoading(false)
-  }
-  fetchStandings()
-}, [activeTab])
+    fetchStandings()
+  }, [activeTab])
 
   return (
     <div className="container mt-4">
@@ -56,10 +59,10 @@ function StandingsPage() {
       </div>
 
       {loading && (
-  <div className="text-center mt-5">
-    <div className="spinner-border" style={{ color: '#E8002D' }} role="status" />
-  </div>
-)}
+        <div className="text-center mt-5">
+          <div className="spinner-border" style={{ color: '#E8002D' }} role="status" />
+        </div>
+      )}
 
       {activeTab === 'drivers' && (
         <div className="d-flex flex-wrap gap-3 justify-content-center">
@@ -68,10 +71,10 @@ function StandingsPage() {
               key={standing.Driver.driverId}
               standing={standing}
               onClick={async () => {
-     setSelectedDriver(standing)
-     const data = await getDriverResults(standing.Driver.driverId)
-     setDriverResults(data.MRData.RaceTable.Races)
-            }}
+                setSelectedDriver(standing)
+                const data = await getDriverResults(standing.Driver.driverId)
+                setDriverResults(data.MRData.RaceTable.Races)
+              }}
             />
           ))}
         </div>
@@ -80,7 +83,11 @@ function StandingsPage() {
       {activeTab === 'constructors' && (
         <div className="d-flex flex-wrap gap-3 justify-content-center">
           {constructors.map((standing) => (
-            <ConstructorCard key={standing.Constructor.constructorId} standing={standing} />
+            <ConstructorCard
+              key={standing.Constructor.constructorId}
+              standing={standing}
+              onClick={() => setSelectedConstructor(standing)}
+            />
           ))}
         </div>
       )}
@@ -108,23 +115,50 @@ function StandingsPage() {
                 <col style={{ width: '20%' }} />
                 <col style={{ width: '20%' }} />
               </colgroup>
-  <thead>
-    <tr style={{ color: '#8B9AB0' }}>
-      <th style={{ textAlign: 'left' }}>GP</th>
-      <th style={{ textAlign: 'center' }}>Pos</th>
-      <th style={{ textAlign: 'center' }}>Points</th>
-    </tr>
-  </thead>
-  <tbody>
-    {driverResults.map((race) => (
-      <tr key={race.round}>
-        <td style={{ textAlign: 'left' }}>{race.raceName}</td>
-        <td style={{ textAlign: 'center' }}>{race.Results[0].position}</td>
-        <td style={{ textAlign: 'center' }}>{race.Results[0].points}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+              <thead>
+                <tr style={{ color: '#8B9AB0' }}>
+                  <th style={{ textAlign: 'left' }}>GP</th>
+                  <th style={{ textAlign: 'center' }}>Pos</th>
+                  <th style={{ textAlign: 'center' }}>Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {driverResults.map((race) => (
+                  <tr key={race.round}>
+                    <td style={{ textAlign: 'left' }}>{race.raceName}</td>
+                    <td style={{ textAlign: 'center' }}>{race.Results[0].position}</td>
+                    <td style={{ textAlign: 'center' }}>{race.Results[0].points}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {selectedConstructor && (
+        <div className="modal-overlay" onClick={() => setSelectedConstructor(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setSelectedConstructor(null)}>✕</button>
+            <div style={{
+              color: teamColors[selectedConstructor.Constructor.constructorId] || '#fff',
+              fontSize: '32px',
+              fontWeight: '700'
+            }}>
+              {selectedConstructor.Constructor.name}
+            </div>
+            <p>{selectedConstructor.Constructor.nationality}</p>
+            <p>{selectedConstructor.points} pts — {selectedConstructor.wins} victoires</p>
+            <p>P{selectedConstructor.position} au championnat</p>
+            <h5 style={{ marginTop: '1rem', color: '#8B9AB0' }}>Pilotes</h5>
+            {allDrivers
+              .filter(d => d.Constructors[0].constructorId === selectedConstructor.Constructor.constructorId)
+              .map(d => (
+                <p key={d.Driver.driverId}>
+                  #{d.Driver.permanentNumber} {d.Driver.givenName} {d.Driver.familyName} — {d.points} pts (P{d.position})
+                </p>
+              ))
+            }
           </div>
         </div>
       )}
