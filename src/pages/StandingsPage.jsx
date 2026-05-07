@@ -24,19 +24,22 @@ function StandingsPage() {
   const [constructors, setConstructors] = useState([])
   const [selectedDriver, setSelectedDriver] = useState(null)
   const [driverResults, setDriverResults] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchStandings = async () => {
-      if (activeTab === 'drivers') {
-        const data = await getDriverStandings()
-        setDrivers(data.MRData.StandingsTable.StandingsLists[0].DriverStandings)
-      } else {
-        const data = await getConstructorStandings()
-        setConstructors(data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
-      }
+  const fetchStandings = async () => {
+    setLoading(true)
+    if (activeTab === 'drivers') {
+      const data = await getDriverStandings()
+      setDrivers(data.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+    } else {
+      const data = await getConstructorStandings()
+      setConstructors(data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
     }
-    fetchStandings()
-  }, [activeTab])
+    setLoading(false)
+  }
+  fetchStandings()
+}, [activeTab])
 
   return (
     <div className="container mt-4">
@@ -51,6 +54,12 @@ function StandingsPage() {
           onClick={() => setActiveTab('constructors')}
         >Constructeurs</button>
       </div>
+
+      {loading && (
+  <div className="text-center mt-5">
+    <div className="spinner-border" style={{ color: '#E8002D' }} role="status" />
+  </div>
+)}
 
       {activeTab === 'drivers' && (
         <div className="d-flex flex-wrap gap-3 justify-content-center">
