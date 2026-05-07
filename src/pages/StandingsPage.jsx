@@ -105,17 +105,17 @@ function StandingsPage() {
             <table style={{ width: '100%', marginTop: '1rem', fontSize: '0.85rem' }}>
   <thead>
     <tr style={{ color: '#8B9AB0' }}>
-      <th>GP</th>
-      <th>Pos</th>
-      <th>Points</th>
+      <th style={{ textAlign: 'center' }}>GP</th>
+      <th style={{ textAlign: 'center' }}>Pos</th>
+      <th style={{ textAlign: 'center' }}>Points</th>
     </tr>
   </thead>
   <tbody>
     {driverResults.map((race) => (
       <tr key={race.round}>
-        <td>{race.raceName}</td>
-        <td>{race.Results[0].position}</td>
-        <td>{race.Results[0].points}</td>
+        <td style={{ textAlign: 'center' }}>{race.raceName}</td>
+        <td style={{ textAlign: 'center' }}>{race.Results[0].position}</td>
+        <td style={{ textAlign: 'center' }}>{race.Results[0].points}</td>
       </tr>
     ))}
   </tbody>
