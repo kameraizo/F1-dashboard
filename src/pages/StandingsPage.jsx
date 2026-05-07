@@ -110,7 +110,7 @@ function StandingsPage() {
               </colgroup>
   <thead>
     <tr style={{ color: '#8B9AB0' }}>
-      <th style={{ textAlign: 'center' }}>GP</th>
+      <th style={{ textAlign: 'left' }}>GP</th>
       <th style={{ textAlign: 'center' }}>Pos</th>
       <th style={{ textAlign: 'center' }}>Points</th>
     </tr>
@@ -118,7 +118,7 @@ function StandingsPage() {
   <tbody>
     {driverResults.map((race) => (
       <tr key={race.round}>
-        <td style={{ textAlign: 'center' }}>{race.raceName}</td>
+        <td style={{ textAlign: 'left' }}>{race.raceName}</td>
         <td style={{ textAlign: 'center' }}>{race.Results[0].position}</td>
         <td style={{ textAlign: 'center' }}>{race.Results[0].points}</td>
       </tr>
