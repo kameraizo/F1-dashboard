@@ -24,8 +24,12 @@ function HomePage() {
   const [races, setRaces] = useState([])
   const [selectedDriver, setSelectedDriver] = useState(null)
 
-  const lastRace = results[results.length - 1]
-  const nextRace = races.find(race => new Date(race.date) > new Date())
+  const today = new Date()
+  const pastRaces = races.filter(race => new Date(race.date) < today)
+  const lastRace = pastRaces[pastRaces.length - 1]
+  const lastRaceWithResults = results[results.length - 1]
+  const nextRace = races.find(race => new Date(race.date) > today)
+  
 
   useEffect(() => {
     getDriverStandings()
@@ -67,10 +71,10 @@ function HomePage() {
       </div>
 
       <h2 className="title-gradient text-center mb-4 mt-5">
-  Top 3 — {lastRace?.raceName}
+  Top 3 — {lastRaceWithResults?.raceName}
 </h2>
       <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
-        {lastRace?.Results?.slice(0, 3).map((result) => (
+        {lastRaceWithResults?.Results?.slice(0, 3).map((result) => (
           <DriverCard
             key={result.Driver.driverId}
             standing={result}
