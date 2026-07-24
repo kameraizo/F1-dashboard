@@ -1,38 +1,49 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, NavLink } from "react-router-dom"
 import logo from "../assets/Logo-F1.png"
 
+const navLinks = [
+  { to: "/", label: "Accueil", end: true },
+  { to: "/classements", label: "Classements" },
+  { to: "/saison", label: "Saison" },
+  { to: "/circuits", label: "Circuits" },
+]
+
 function Navbar() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <nav className="navbar navbar-expand-lg">
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/">
-          <img src={logo} alt="F1 Dashboard" height="40" />
+    <nav className="pitwall-nav">
+      <div className="pitwall-nav__inner">
+        <Link className="pitwall-nav__brand" to="/" onClick={() => setOpen(false)}>
+          <img src={logo} alt="F1 Dashboard" />
+          <span className="pitwall-nav__season">Saison 26</span>
         </Link>
 
         <button
-          className="navbar-toggler"
+          className="pitwall-nav__toggle"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
         >
-          <span className="navbar-toggler-icon"></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">Accueil</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/classements">Classements</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/saison">Saison</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/circuits">Circuits</Link>
-            </li>
-          </ul>
+        <div className={`pitwall-nav__links${open ? ' is-open' : ''}`}>
+          {navLinks.map(({ to, label, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) => `pitwall-nav__link${isActive ? ' active' : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              {label}
+            </NavLink>
+          ))}
         </div>
       </div>
     </nav>

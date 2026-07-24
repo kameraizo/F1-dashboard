@@ -1,26 +1,34 @@
+import CountUp from './CountUp'
+
 function GPCard({ race, label, winner }) {
   const { Circuit, date, time, raceName, round } = race
   const daysUntil = Math.ceil((new Date(date) - new Date()) / (1000 * 60 * 60 * 24))
+  const isNext = label === 'Prochain GP'
+  const dateFormatted = new Date(date).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+
   return (
-    <div className="gp-card">
-      {label && <div style={{ color: '#8B9AB0', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>{label}</div>}
-      <div className="gp-round">Round {round}</div>
-      <div className="gp-name">{raceName}</div>
+    <div className={`gp-card${isNext ? ' gp-card--next' : ''}`}>
+      {label && <span className="gp-card__eyebrow">{label}</span>}
+      <div className="gp-card__round">Round {round}</div>
+      <div className="gp-card__name">{raceName}</div>
       {winner && (
-  <div style={{ color: '#FFD700', fontSize: '13px', marginTop: '0.3rem' }}>
-    🏆 {winner.Driver.givenName} {winner.Driver.familyName}
-  </div>
-)}
-      {label === 'Prochain GP' && (
-  <div style={{ color: '#E8002D', fontSize: '13px', marginTop: '0.3rem', fontWeight: '600' }}>
-    Dans {daysUntil} jours
-  </div>
-)}
-      <div className="gp-circuit">{Circuit.circuitName}</div>
-      <div className="gp-meta">
+        <div className="gp-card__winner">🏆 {winner.Driver.givenName} {winner.Driver.familyName}</div>
+      )}
+      {isNext && (
+        <div className="gp-card__countdown">
+          <span className="gp-card__countdown-value"><CountUp value={daysUntil} duration={700} /></span>
+          <span className="gp-card__countdown-label">jours</span>
+        </div>
+      )}
+      <div className="gp-card__circuit">{Circuit.circuitName}</div>
+      <div className="gp-card__meta">
         <span>{Circuit.Location.locality}, {Circuit.Location.country}</span>
-        <span>{date}</span>
-        <span>{time}</span>
+        <span>{dateFormatted}</span>
+        {time && <span>{time.slice(0, 5)}</span>}
       </div>
     </div>
   )

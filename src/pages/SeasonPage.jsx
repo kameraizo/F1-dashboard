@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRaces, getRaceResults } from '../services/api'
+import SectionHeading from '../components/SectionHeading'
 
 function SeasonPage() {
   const [races, setRaces] = useState([])
@@ -25,66 +26,69 @@ function SeasonPage() {
   }
 
   return (
-    <div className="container mt-4">
-      <h2 className="title-gradient text-center mb-4">Saison 2026 — Top 3</h2>
+    <div className="page season">
+      <SectionHeading eyebrow="Saison 2026" title="Calendrier" />
 
-      {races.map((race) => {
-        const today = new Date()
-        const raceDate = new Date(race.date)
-        const isPast = raceDate < today
-        const dateFormatted = raceDate.toLocaleDateString('fr-FR', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        })
+      <div className="timeline">
+        {races.map((race) => {
+          const today = new Date()
+          const raceDate = new Date(race.date)
+          const isPast = raceDate < today
+          const dateFormatted = raceDate.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          })
 
-        return (
-          <div
-            key={race.round}
-            className={`race-card ${isPast ? 'past' : ''}`}
-            onClick={() => handleRaceClick(race, isPast)}
-            style={{ cursor: isPast ? 'pointer' : 'default' }}
-          >
-            <span className="race-round">R{race.round}</span>
-            <span className="race-name">{race.raceName}</span>
-            <span className="race-date">{dateFormatted}</span>
-            <span className={isPast ? 'badge-past' : 'badge-upcoming'}>
-              {isPast ? 'Passé' : 'À venir'}
-            </span>
-          </div>
-        )
-      })}
+          return (
+            <div
+              key={race.round}
+              className={`timeline-row ${isPast ? 'is-past' : 'is-upcoming'}`}
+              onClick={() => handleRaceClick(race, isPast)}
+              style={{ cursor: isPast ? 'pointer' : 'default' }}
+            >
+              <span className="timeline-row__node" />
+              <span className="timeline-row__round">R{race.round}</span>
+              <span className="timeline-row__name">{race.raceName}</span>
+              <span className="timeline-row__date">{dateFormatted}</span>
+              <span className={`timeline-row__badge ${isPast ? 'is-past' : 'is-upcoming'}`}>
+                {isPast ? 'Terminé' : 'À venir'}
+              </span>
+            </div>
+          )
+        })}
+      </div>
 
       {selectedRace && (
         <div className="modal-overlay" onClick={() => setSelectedRace(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedRace(null)}>✕</button>
             <h3>{selectedRace.raceName}</h3>
-            <p style={{ color: '#8B9AB0', marginBottom: '1rem' }}>
+            <p style={{ marginBottom: '1rem' }}>
               {selectedRace.Circuit.circuitName}
             </p>
 
             {loadingResults ? (
-              <p style={{ color: '#8B9AB0' }}>Chargement...</p>
+              <p>Chargement...</p>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table style={{ borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <th style={{ color: '#E8002D', padding: '8px', textAlign: 'left' }}>Pos</th>
-                    <th style={{ color: '#E8002D', padding: '8px', textAlign: 'left' }}>Pilote</th>
-                    <th style={{ color: '#E8002D', padding: '8px', textAlign: 'left' }}>Écurie</th>
-                    <th style={{ color: '#E8002D', padding: '8px', textAlign: 'left' }}>Pts</th>
+                  <tr>
+                    <th style={{ textAlign: 'left' }}>Pos</th>
+                    <th style={{ textAlign: 'left' }}>Pilote</th>
+                    <th style={{ textAlign: 'left' }}>Écurie</th>
+                    <th style={{ textAlign: 'left' }}>Pts</th>
                   </tr>
                 </thead>
                 <tbody>
                   {raceResults.slice(0, 10).map((result) => (
-                    <tr key={result.Driver.driverId} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                      <td style={{ color: '#ffffff', padding: '8px' }}>P{result.position}</td>
-                      <td style={{ color: '#ffffff', padding: '8px' }}>
+                    <tr key={result.Driver.driverId}>
+                      <td style={{ color: '#ffffff' }}>P{result.position}</td>
+                      <td style={{ color: '#ffffff' }}>
                         {result.Driver.givenName[0]}. {result.Driver.familyName}
                       </td>
-                      <td style={{ color: '#8B9AB0', padding: '8px' }}>{result.Constructor.name}</td>
-                      <td style={{ color: '#8B9AB0', padding: '8px' }}>{result.points}</td>
+                      <td>{result.Constructor.name}</td>
+                      <td>{result.points}</td>
                     </tr>
                   ))}
                 </tbody>

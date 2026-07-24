@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { getRaces } from "../services/api"
+import SectionHeading from "../components/SectionHeading"
 
 const countryFlags = {
   Australia: 'au',
@@ -66,24 +67,35 @@ function CircuitsPage() {
   }, [])
 
   return (
-    <div className="container mt-4">
-      <h2 className="title-gradient text-center mb-4">Circuits 2026 — Top 3</h2>
+    <div className="page circuits">
+      <SectionHeading eyebrow="Saison 2026" title="Circuits" />
 
-      <div className="d-flex flex-wrap gap-3 justify-content-center">
+      <div className="circuit-grid">
         {races.map((race) => {
           const country = race.Circuit.Location.country
           const flagCode = countryFlags[country] || 'un'
+          const trackSvg = circuitMaps[race.Circuit.circuitId]
 
           return (
             <div key={race.round} className="circuit-card" onClick={() => setSelectedRace(race)}>
+              <span className="circuit-card__round">R{race.round}</span>
               <img
                 src={`https://flagcdn.com/w80/${flagCode}.png`}
                 alt={country}
-                className="circuit-flag"
+                className="circuit-card__flag"
               />
-              <div className="circuit-name">{race.Circuit.circuitName}</div>
-              <div className="circuit-country">{country}</div>
-              <div className="circuit-date">{race.date}</div>
+              {trackSvg ? (
+                <img
+                  src={trackSvg}
+                  alt={`Tracé de ${race.Circuit.circuitName}`}
+                  className="circuit-card__track"
+                />
+              ) : (
+                <div className="circuit-card__track circuit-card__track--placeholder" />
+              )}
+              <div className="circuit-card__name">{race.Circuit.circuitName}</div>
+              <div className="circuit-card__country">{country}</div>
+              <div className="circuit-card__date">{race.date}</div>
             </div>
           )
         })}
@@ -96,7 +108,6 @@ function CircuitsPage() {
             <img
               src={`https://flagcdn.com/w80/${countryFlags[selectedRace.Circuit.Location.country] || 'un'}.png`}
               alt={selectedRace.Circuit.Location.country}
-              style={{ width: '80px', borderRadius: '4px', marginBottom: '1rem' }}
             />
             {circuitMaps[selectedRace.Circuit.circuitId] && (
               <img
@@ -113,7 +124,6 @@ function CircuitsPage() {
           </div>
         </div>
       )}
-
     </div>
   )
 }

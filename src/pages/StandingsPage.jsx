@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import DriverCard from '../components/DriverCard'
 import ConstructorCard from '../components/ConstructorCard'
+import SectionHeading from '../components/SectionHeading'
+import CountUp from '../components/CountUp'
 import { getDriverStandings, getConstructorStandings, getDriverResults } from '../services/api'
 
 const teamColors = {
@@ -45,7 +47,11 @@ function StandingsPage() {
   }, [activeTab])
 
   return (
-    <div className="container mt-4">
+    <div className="page standings">
+      <SectionHeading
+        eyebrow="Classement 2026"
+        title={activeTab === 'drivers' ? 'Pilotes' : 'Constructeurs'}
+      />
 
       <div className="tab-buttons">
         <button
@@ -59,36 +65,62 @@ function StandingsPage() {
       </div>
 
       {loading && (
-        <div className="text-center mt-5">
-          <div className="spinner-border" style={{ color: '#E8002D' }} role="status" />
+        <div className="loading-strip"><span /></div>
+      )}
+
+      {!loading && activeTab === 'drivers' && (
+        <div className="timing-tower">
+          <table className="timing-table">
+            <thead>
+              <tr>
+                <th className="t-pos">Pos</th>
+                <th className="t-no">No</th>
+                <th className="t-driver">Pilote</th>
+                <th className="t-nat">Nat</th>
+                <th className="t-pts">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {drivers.map((standing) => (
+                <DriverCard
+                  key={standing.Driver.driverId}
+                  standing={standing}
+                  variant="row"
+                  maxPoints={drivers[0]?.points}
+                  onClick={async () => {
+                    setSelectedDriver(standing)
+                    const data = await getDriverResults(standing.Driver.driverId)
+                    setDriverResults(data.MRData.RaceTable.Races)
+                  }}
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
-      {activeTab === 'drivers' && (
-        <div className="d-flex flex-wrap gap-3 justify-content-center">
-          {drivers.map((standing) => (
-            <DriverCard
-              key={standing.Driver.driverId}
-              standing={standing}
-              onClick={async () => {
-                setSelectedDriver(standing)
-                const data = await getDriverResults(standing.Driver.driverId)
-                setDriverResults(data.MRData.RaceTable.Races)
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'constructors' && (
-        <div className="d-flex flex-wrap gap-3 justify-content-center">
-          {constructors.map((standing) => (
-            <ConstructorCard
-              key={standing.Constructor.constructorId}
-              standing={standing}
-              onClick={() => setSelectedConstructor(standing)}
-            />
-          ))}
+      {!loading && activeTab === 'constructors' && (
+        <div className="timing-tower">
+          <table className="timing-table">
+            <thead>
+              <tr>
+                <th className="t-pos">Pos</th>
+                <th className="t-team">Écurie</th>
+                <th className="t-nat">Nat</th>
+                <th className="t-pts">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {constructors.map((standing) => (
+                <ConstructorCard
+                  key={standing.Constructor.constructorId}
+                  standing={standing}
+                  maxPoints={constructors[0]?.points}
+                  onClick={() => setSelectedConstructor(standing)}
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -96,30 +128,21 @@ function StandingsPage() {
         <div className="modal-overlay" onClick={() => setSelectedDriver(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedDriver(null)}>✕</button>
-            <div style={{
-              color: teamColors[selectedDriver.Constructors[0].constructorId] || '#fff',
-              fontSize: '48px',
-              fontWeight: '700'
-            }}>
+            <div className="modal-number" style={{ color: teamColors[selectedDriver.Constructors[0].constructorId] || '#fff' }}>
               {selectedDriver.Driver.permanentNumber}
             </div>
             <h3>{selectedDriver.Driver.givenName} {selectedDriver.Driver.familyName}</h3>
             <p>{selectedDriver.Constructors[0].name}</p>
             <p>{selectedDriver.Driver.nationality}</p>
-            <p>{selectedDriver.points} pts — {selectedDriver.wins} victoires</p>
+            <p><span className="modal-points"><CountUp value={selectedDriver.points} /> pts</span> — {selectedDriver.wins} victoires</p>
             <p>Né le {selectedDriver.Driver.dateOfBirth}</p>
             <p>P{selectedDriver.position} au championnat</p>
-            <table style={{ width: '100%', marginTop: '1rem', fontSize: '0.85rem', tableLayout: 'fixed' }}>
-              <colgroup>
-                <col style={{ width: '60%' }} />
-                <col style={{ width: '20%' }} />
-                <col style={{ width: '20%' }} />
-              </colgroup>
+            <table>
               <thead>
-                <tr style={{ color: '#8B9AB0' }}>
+                <tr>
                   <th style={{ textAlign: 'left' }}>GP</th>
-                  <th style={{ textAlign: 'center' }}>Pos</th>
-                  <th style={{ textAlign: 'center' }}>Points</th>
+                  <th>Pos</th>
+                  <th>Points</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,15 +163,11 @@ function StandingsPage() {
         <div className="modal-overlay" onClick={() => setSelectedConstructor(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedConstructor(null)}>✕</button>
-            <div style={{
-              color: teamColors[selectedConstructor.Constructor.constructorId] || '#fff',
-              fontSize: '32px',
-              fontWeight: '700'
-            }}>
+            <div className="modal-number" style={{ fontSize: '28px', color: teamColors[selectedConstructor.Constructor.constructorId] || '#fff' }}>
               {selectedConstructor.Constructor.name}
             </div>
             <p>{selectedConstructor.Constructor.nationality}</p>
-            <p>{selectedConstructor.points} pts — {selectedConstructor.wins} victoires</p>
+            <p><span className="modal-points"><CountUp value={selectedConstructor.points} /> pts</span> — {selectedConstructor.wins} victoires</p>
             <p>P{selectedConstructor.position} au championnat</p>
             <h5 style={{ marginTop: '1rem', color: '#8B9AB0' }}>Pilotes</h5>
             {allDrivers
@@ -162,7 +181,6 @@ function StandingsPage() {
           </div>
         </div>
       )}
-
     </div>
   )
 }
