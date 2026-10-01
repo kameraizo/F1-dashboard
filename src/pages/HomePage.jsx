@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { getDriverStandings, getResults, getRaces } from "../services/api"
+import { getDriverStandings, getLastRaceResults, getRaces } from "../services/api"
 import DriverCard from "../components/DriverCard"
 import GPCard from "../components/GPCard"
 import SectionHeading from "../components/SectionHeading"
@@ -63,7 +63,7 @@ function HomePage() {
         setDrivers(data.MRData.StandingsTable.StandingsLists[0].DriverStandings)
       })
 
-    getResults()
+    getLastRaceResults()
       .then(data => {
         setResults(data.MRData.RaceTable.Races)
       })

@@ -33,3 +33,7 @@ export const getDriverResults = async (driverId) => {
   const response = await api.get(`/2026/drivers/${driverId}/results.json`)
   return response.data
 }
+export const getLastRaceResults = async () => {
+  const response = await api.get('/current/last/results.json')
+  return response.data
+}
