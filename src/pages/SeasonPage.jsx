@@ -1,39 +1,64 @@
 import { useState, useEffect } from 'react'
-import { getRaces, getRaceResults } from '../services/api'
+import { getRaces, getRaceResults, getLastRaceResults, getApiErrorMessage } from '../services/api'
 import SectionHeading from '../components/SectionHeading'
+import ApiError from '../components/ApiError'
+import { getRaceStatus, RACE_STATUS, RACE_STATUS_LABELS } from '../utils/raceStatus'
 
 function SeasonPage() {
   const [races, setRaces] = useState([])
+  const [lastResults, setLastResults] = useState(null)
+  const [error, setError] = useState(null)
   const [selectedRace, setSelectedRace] = useState(null)
   const [raceResults, setRaceResults] = useState([])
+  const [resultsError, setResultsError] = useState(null)
   const [loadingResults, setLoadingResults] = useState(false)
 
   useEffect(() => {
     const fetchRaces = async () => {
-      const data = await getRaces()
-      setRaces(data.MRData.RaceTable.Races)
+      // Chargés ensemble pour ne pas afficher un statut provisoire faux
+      const [racesRes, lastRes] = await Promise.allSettled([getRaces(), getLastRaceResults()])
+      if (racesRes.status === 'rejected') {
+        setError(getApiErrorMessage(racesRes.reason))
+        return
+      }
+      // Si /current/last échoue, lastResults reste null : statuts calculés sur la date seule
+      if (lastRes.status === 'fulfilled') {
+        const raceTable = lastRes.value.MRData.RaceTable
+        setLastResults(raceTable.Races[0] ?? { season: raceTable.season, round: '0' })
+      }
+      setRaces(racesRes.value.MRData.RaceTable.Races)
     }
     fetchRaces()
   }, [])
 
-  const handleRaceClick = async (race, isPast) => {
-    if (!isPast) return
+  const handleRaceClick = async (race, status) => {
+    if (status === RACE_STATUS.UPCOMING) return
     setSelectedRace(race)
+    setResultsError(null)
     setLoadingResults(true)
-    const data = await getRaceResults(race.round)
-    setRaceResults(data.MRData.RaceTable.Races[0].Results)
-    setLoadingResults(false)
+    try {
+      const data = await getRaceResults(race.round)
+      // L'API renvoie une liste vide tant que les résultats ne sont pas publiés
+      setRaceResults(data.MRData.RaceTable.Races[0]?.Results ?? [])
+    } catch (err) {
+      setRaceResults([])
+      setResultsError(getApiErrorMessage(err))
+    } finally {
+      setLoadingResults(false)
+    }
   }
 
   return (
     <div className="page season">
       <SectionHeading eyebrow="Saison 2026" title="Calendrier" />
 
+      {error && <ApiError message={error} />}
+
       <div className="timeline">
         {races.map((race) => {
-          const today = new Date()
           const raceDate = new Date(race.date)
-          const isPast = raceDate < today
+          const status = getRaceStatus(race, lastResults)
+          const isClickable = status !== RACE_STATUS.UPCOMING
           const dateFormatted = raceDate.toLocaleDateString('fr-FR', {
             day: 'numeric',
             month: 'long',
@@ -43,16 +68,16 @@ function SeasonPage() {
           return (
             <div
               key={race.round}
-              className={`timeline-row ${isPast ? 'is-past' : 'is-upcoming'}`}
-              onClick={() => handleRaceClick(race, isPast)}
-              style={{ cursor: isPast ? 'pointer' : 'default' }}
+              className={`timeline-row is-${status}`}
+              onClick={() => handleRaceClick(race, status)}
+              style={{ cursor: isClickable ? 'pointer' : 'default' }}
             >
               <span className="timeline-row__node" />
               <span className="timeline-row__round">R{race.round}</span>
               <span className="timeline-row__name">{race.raceName}</span>
               <span className="timeline-row__date">{dateFormatted}</span>
-              <span className={`timeline-row__badge ${isPast ? 'is-past' : 'is-upcoming'}`}>
-                {isPast ? 'Terminé' : 'À venir'}
+              <span className={`timeline-row__badge is-${status}`}>
+                {RACE_STATUS_LABELS[status]}
               </span>
             </div>
           )
@@ -70,6 +95,10 @@ function SeasonPage() {
 
             {loadingResults ? (
               <p>Chargement...</p>
+            ) : resultsError ? (
+              <ApiError message={resultsError} />
+            ) : raceResults.length === 0 ? (
+              <p>Résultats pas encore disponibles</p>
             ) : (
               <table style={{ borderCollapse: 'collapse' }}>
                 <thead>

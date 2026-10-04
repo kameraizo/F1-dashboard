@@ -3,7 +3,8 @@ import DriverCard from '../components/DriverCard'
 import ConstructorCard from '../components/ConstructorCard'
 import SectionHeading from '../components/SectionHeading'
 import CountUp from '../components/CountUp'
-import { getDriverStandings, getConstructorStandings, getDriverResults } from '../services/api'
+import ApiError from '../components/ApiError'
+import { getDriverStandings, getConstructorStandings, getDriverResults, getApiErrorMessage } from '../services/api'
 
 const teamColors = {
   mclaren:      '#FF8000',
@@ -29,19 +30,28 @@ function StandingsPage() {
   const [selectedConstructor, setSelectedConstructor] = useState(null)
   const [allDrivers, setAllDrivers] = useState([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [driverResultsError, setDriverResultsError] = useState(null)
 
   useEffect(() => {
     const fetchStandings = async () => {
       setLoading(true)
-      const driversData = await getDriverStandings()
-      setAllDrivers(driversData.MRData.StandingsTable.StandingsLists[0].DriverStandings)
-      if (activeTab === 'drivers') {
-        setDrivers(driversData.MRData.StandingsTable.StandingsLists[0].DriverStandings)
-      } else {
-        const data = await getConstructorStandings()
-        setConstructors(data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+      setError(null)
+      try {
+        const driversData = await getDriverStandings()
+        const driverStandings = driversData.MRData.StandingsTable.StandingsLists[0]?.DriverStandings ?? []
+        setAllDrivers(driverStandings)
+        if (activeTab === 'drivers') {
+          setDrivers(driverStandings)
+        } else {
+          const data = await getConstructorStandings()
+          setConstructors(data.MRData.StandingsTable.StandingsLists[0]?.ConstructorStandings ?? [])
+        }
+      } catch (err) {
+        setError(getApiErrorMessage(err))
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchStandings()
   }, [activeTab])
@@ -68,6 +78,8 @@ function StandingsPage() {
         <div className="loading-strip"><span /></div>
       )}
 
+      {!loading && error && <ApiError message={error} />}
+
       {!loading && activeTab === 'drivers' && (
         <div className="timing-tower">
           <table className="timing-table">
@@ -89,8 +101,14 @@ function StandingsPage() {
                   maxPoints={drivers[0]?.points}
                   onClick={async () => {
                     setSelectedDriver(standing)
-                    const data = await getDriverResults(standing.Driver.driverId)
-                    setDriverResults(data.MRData.RaceTable.Races)
+                    setDriverResults([])
+                    setDriverResultsError(null)
+                    try {
+                      const data = await getDriverResults(standing.Driver.driverId)
+                      setDriverResults(data.MRData.RaceTable.Races)
+                    } catch (err) {
+                      setDriverResultsError(getApiErrorMessage(err))
+                    }
                   }}
                 />
               ))}
@@ -137,6 +155,7 @@ function StandingsPage() {
             <p><span className="modal-points"><CountUp value={selectedDriver.points} /> pts</span> — {selectedDriver.wins} victoires</p>
             <p>Né le {selectedDriver.Driver.dateOfBirth}</p>
             <p>P{selectedDriver.position} au championnat</p>
+            {driverResultsError && <ApiError message={driverResultsError} />}
             <table>
               <thead>
                 <tr>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
-import { getRaces } from "../services/api"
+import { getRaces, getApiErrorMessage } from "../services/api"
 import SectionHeading from "../components/SectionHeading"
+import ApiError from "../components/ApiError"
 
 const countryFlags = {
   Australia: 'au',
@@ -57,11 +58,16 @@ const circuitMaps = {
 function CircuitsPage() {
   const [races, setRaces] = useState([])
   const [selectedRace, setSelectedRace] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchRaces = async () => {
-      const data = await getRaces()
-      setRaces(data.MRData.RaceTable.Races)
+      try {
+        const data = await getRaces()
+        setRaces(data.MRData.RaceTable.Races)
+      } catch (err) {
+        setError(getApiErrorMessage(err))
+      }
     }
     fetchRaces()
   }, [])
@@ -69,6 +75,8 @@ function CircuitsPage() {
   return (
     <div className="page circuits">
       <SectionHeading eyebrow="Saison 2026" title="Circuits" />
+
+      {error && <ApiError message={error} />}
 
       <div className="circuit-grid">
         {races.map((race) => {

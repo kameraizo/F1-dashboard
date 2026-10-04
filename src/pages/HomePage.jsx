@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react"
-import { getDriverStandings, getLastRaceResults, getRaces } from "../services/api"
+import { useState, useEffect, Fragment } from "react"
+import { getDriverStandings, getLastRaceResults, getRaces, getApiErrorMessage } from "../services/api"
+import ApiError from "../components/ApiError"
 import DriverCard from "../components/DriverCard"
 import GPCard from "../components/GPCard"
 import SectionHeading from "../components/SectionHeading"
 import CircuitAmbient from "../components/CircuitAmbient"
 import CountUp from "../components/CountUp"
+import { getRaceStatus, RACE_STATUS } from "../utils/raceStatus"
 
 const teamColors = {
   mclaren:      '#FF8000',
@@ -50,32 +52,41 @@ function HomePage() {
   const [results, setResults] = useState([])
   const [races, setRaces] = useState([])
   const [selectedDriver, setSelectedDriver] = useState(null)
+  const [error, setError] = useState(null)
 
-  const today = new Date()
-  const pastRaces = races.filter(race => new Date(race.date) < today)
-  const lastRace = pastRaces[pastRaces.length - 1]
+  // Carte "Dernier GP" et Top 3 viennent de la même source : /current/last/results
   const lastRaceWithResults = results[results.length - 1]
-  const nextRace = races.find(race => new Date(race.date) > today)
+  // Courses passées au calendrier mais dont les résultats ne sont pas encore publiés
+  const pendingRaces = lastRaceWithResults
+    ? races.filter(race => getRaceStatus(race, lastRaceWithResults) === RACE_STATUS.PENDING)
+    : []
+  const nextRace = races.find(race => getRaceStatus(race) === RACE_STATUS.UPCOMING)
 
   useEffect(() => {
+    const handleError = (err) => setError(getApiErrorMessage(err))
+
     getDriverStandings()
       .then(data => {
-        setDrivers(data.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+        setDrivers(data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings ?? [])
       })
+      .catch(handleError)
 
     getLastRaceResults()
       .then(data => {
         setResults(data.MRData.RaceTable.Races)
       })
+      .catch(handleError)
 
     getRaces()
       .then(data => {
         setRaces(data.MRData.RaceTable.Races)
       })
+      .catch(handleError)
   }, [])
 
   return (
     <div className="page home">
+      {error && <ApiError message={error} />}
       <div className="home__hero">
         <CircuitAmbient />
         <div className="speed-lines" aria-hidden="true" />
@@ -86,8 +97,16 @@ function HomePage() {
       <div className="kerb-divider" aria-hidden="true" />
 
       <div className="home__races">
-        {lastRace && <GPCard race={lastRace} label="Dernier GP" winner={lastRaceWithResults?.Results?.[0]} />}
-        {lastRace && nextRace && <div className="home__races-arrow" aria-hidden="true" />}
+        {lastRaceWithResults && (
+          <GPCard race={lastRaceWithResults} label="Dernier GP" winner={lastRaceWithResults.Results?.[0]} />
+        )}
+        {pendingRaces.map(race => (
+          <Fragment key={race.round}>
+            <div className="home__races-arrow" aria-hidden="true" />
+            <GPCard race={race} label="Course terminée" status={RACE_STATUS.PENDING} />
+          </Fragment>
+        ))}
+        {lastRaceWithResults && nextRace && <div className="home__races-arrow" aria-hidden="true" />}
         {nextRace && <GPCard race={nextRace} label="Prochain GP" />}
       </div>
 

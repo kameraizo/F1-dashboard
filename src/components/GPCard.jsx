@@ -1,9 +1,11 @@
 import CountUp from './CountUp'
+import { getRaceStart, RACE_STATUS, RACE_STATUS_LABELS } from '../utils/raceStatus'
 
-function GPCard({ race, label, winner }) {
+function GPCard({ race, label, winner, status }) {
   const { Circuit, date, time, raceName, round } = race
-  const daysUntil = Math.ceil((new Date(date) - new Date()) / (1000 * 60 * 60 * 24))
+  const daysUntil = Math.ceil((getRaceStart(race) - new Date()) / (1000 * 60 * 60 * 24))
   const isNext = label === 'Prochain GP'
+  const isPending = status === RACE_STATUS.PENDING
   const dateFormatted = new Date(date).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
@@ -11,10 +13,11 @@ function GPCard({ race, label, winner }) {
   })
 
   return (
-    <div className={`gp-card${isNext ? ' gp-card--next' : ''}`}>
+    <div className={`gp-card${isNext ? ' gp-card--next' : ''}${isPending ? ' gp-card--pending' : ''}`}>
       {label && <span className="gp-card__eyebrow">{label}</span>}
       <div className="gp-card__round">Round {round}</div>
       <div className="gp-card__name">{raceName}</div>
+      {isPending && <span className="gp-card__badge">{RACE_STATUS_LABELS[status]}</span>}
       {winner && (
         <div className="gp-card__winner">🏆 {winner.Driver.givenName} {winner.Driver.familyName}</div>
       )}

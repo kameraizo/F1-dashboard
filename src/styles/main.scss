@@ -646,6 +646,32 @@ body::after {
     color: var(--telemetry-cyan);
   }
 
+  &--pending {
+    opacity: 0.75;
+    border-left-color: var(--flag-amber);
+
+    &:hover {
+      box-shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.6), 0 0 22px -6px var(--flag-amber);
+    }
+  }
+
+  &--pending &__round {
+    color: var(--flag-amber);
+  }
+
+  &__badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.25rem 0.55rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 197, 61, 0.15);
+    color: var(--flag-amber);
+  }
+
   &__name {
     font-family: var(--font-display);
     font-size: 1.4rem;
@@ -735,6 +761,16 @@ body::after {
       color: var(--carbon-950);
     }
   }
+}
+
+.api-error {
+  margin: 1rem 0 2rem;
+  padding: 0.9rem 1.2rem;
+  background: rgba(255, 30, 60, 0.1);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--race-red);
+  color: var(--paper);
+  font-size: 0.9rem;
 }
 
 .loading-strip {
@@ -941,12 +977,20 @@ body::after {
     border: 2px solid var(--muted-dim);
   }
 
-  &.is-past {
+  &.is-finished {
     opacity: 0.72;
 
     .timeline-row__node {
       background: var(--race-red);
       border-color: var(--race-red);
+    }
+  }
+
+  &.is-pending {
+    opacity: 0.85;
+
+    .timeline-row__node {
+      border-color: var(--flag-amber);
     }
   }
 
@@ -958,7 +1002,8 @@ body::after {
     }
   }
 
-  &.is-past:hover {
+  &.is-finished:hover,
+  &.is-pending:hover {
     border-color: var(--hairline-strong);
     transform: translateX(3px);
   }
@@ -994,9 +1039,14 @@ body::after {
     letter-spacing: 0.06em;
     padding: 0.25rem 0.55rem;
 
-    &.is-past {
+    &.is-finished {
       background: rgba(255, 30, 60, 0.15);
       color: var(--race-red);
+    }
+
+    &.is-pending {
+      background: rgba(255, 197, 61, 0.15);
+      color: var(--flag-amber);
     }
 
     &.is-upcoming {
