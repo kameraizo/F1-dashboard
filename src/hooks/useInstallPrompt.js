@@ -3,10 +3,11 @@ import { useSyncExternalStore } from 'react'
 // Installation de l'app (PWA). Mode renvoyé par useInstallPrompt :
 // - 'prompt'    Chrome/Edge : beforeinstallprompt reçu, la vraie fenêtre d'installation est disponible
 // - 'ios'       Safari iOS : pas d'API, on affiche les instructions "Partager → Sur l'écran d'accueil"
+// - 'in-app'    navigateur intégré (Instagram, Facebook) : on invite à ouvrir le site dans le navigateur
 // - 'installed' déjà installée (display-mode: standalone ou appinstalled)
 // - 'none'      navigateur sans support (Firefox desktop…) ou critères d'installation non remplis
 //
-// Simulation en dev : http://localhost:5173/?install=prompt | ios | installed | none
+// Simulation en dev : http://localhost:5173/?install=prompt | ios | in-app | installed | none
 // (beforeinstallprompt ne se déclenche pas en dev : pas de service worker hors build)
 
 const simulated = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('install') : null
@@ -14,12 +15,15 @@ const simulated = import.meta.env.DEV ? new URLSearchParams(window.location.sear
 const isStandalone = () =>
   window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
 
+// Navigateurs intégrés aux applis Instagram / Facebook (iOS et Android) : installation impossible
+const isInAppBrowser = () => /instagram|fban|fbav|fb_iab/i.test(window.navigator.userAgent)
+
 // iPhone / iPad (iPadOS se présente comme un Mac tactile), uniquement Safari :
-// les autres navigateurs iOS et les navigateurs intégrés (Instagram, Facebook) ont un autre parcours
+// les autres navigateurs iOS ont un autre parcours
 const isIosSafari = () => {
   const ua = window.navigator.userAgent
   const isIos = /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && window.navigator.maxTouchPoints > 1)
-  return isIos && /safari/i.test(ua) && !/crios|fxios|edgios|opios|instagram|fban|fbav/i.test(ua)
+  return isIos && /safari/i.test(ua) && !/crios|fxios|edgios|opios/i.test(ua)
 }
 
 // Fausse invite pour ?install=prompt : confirm() remplace la fenêtre du navigateur
@@ -63,7 +67,8 @@ window.matchMedia('(display-mode: standalone)').addEventListener('change', (even
 const getMode = () => {
   if (installed) return 'installed'
   if (deferredPrompt) return 'prompt'
-  if (simulated) return simulated === 'ios' ? 'ios' : 'none'
+  if (simulated) return ['ios', 'in-app'].includes(simulated) ? simulated : 'none'
+  if (isInAppBrowser()) return 'in-app'
   return isIosSafari() ? 'ios' : 'none'
 }
 

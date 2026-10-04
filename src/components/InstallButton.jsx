@@ -5,7 +5,7 @@ function InstallButton() {
   const mode = useInstallPrompt()
   const dialogRef = useRef(null)
 
-  if (mode !== 'prompt' && mode !== 'ios') return null
+  if (!['prompt', 'ios', 'in-app'].includes(mode)) return null
 
   const handleClick = () => {
     if (mode === 'prompt') {
@@ -32,7 +32,7 @@ function InstallButton() {
         </span>
       </button>
 
-      {mode === 'ios' && (
+      {mode !== 'prompt' && (
         <dialog
           ref={dialogRef}
           className="install-dialog"
@@ -48,19 +48,33 @@ function InstallButton() {
             >
               ✕
             </button>
-            <span className="install-dialog__eyebrow">iPhone · iPad</span>
-            <h2 id="install-dialog-title" className="install-dialog__title">Installer F1 Dashboard</h2>
-            <ol className="install-dialog__steps" role="list">
-              <li>
-                Touchez
-                <svg className="install-dialog__share" viewBox="0 0 24 24" role="img" aria-label="Partager">
-                  <path d="M12 3.5v11M8 7.5l4-4 4 4M7 11H5v9.5h14V11h-2" />
-                </svg>
-                <strong>Partager</strong> dans la barre de Safari
-              </li>
-              <li>Choisissez <strong>Sur l'écran d'accueil</strong></li>
-              <li>Validez avec <strong>Ajouter</strong></li>
-            </ol>
+            {mode === 'ios' ? (
+              <>
+                <span className="install-dialog__eyebrow">iPhone · iPad</span>
+                <h2 id="install-dialog-title" className="install-dialog__title">Installer F1 Dashboard</h2>
+                <ol className="install-dialog__steps" role="list">
+                  <li>
+                    Touchez
+                    <svg className="install-dialog__share" viewBox="0 0 24 24" role="img" aria-label="Partager">
+                      <path d="M12 3.5v11M8 7.5l4-4 4 4M7 11H5v9.5h14V11h-2" />
+                    </svg>
+                    <strong>Partager</strong> dans la barre de Safari
+                  </li>
+                  <li>Choisissez <strong>Sur l'écran d'accueil</strong></li>
+                  <li>Validez avec <strong>Ajouter</strong></li>
+                </ol>
+              </>
+            ) : (
+              <>
+                <span className="install-dialog__eyebrow">Navigateur intégré</span>
+                <h2 id="install-dialog-title" className="install-dialog__title">Ouvrir dans le navigateur</h2>
+                <ol className="install-dialog__steps" role="list">
+                  <li>Touchez le menu <strong>⋯</strong> en haut à droite</li>
+                  <li>Choisissez <strong>Ouvrir dans le navigateur</strong> (Safari ou Chrome)</li>
+                  <li>Touchez à nouveau <strong>Installer l'app</strong></li>
+                </ol>
+              </>
+            )}
           </div>
         </dialog>
       )}
