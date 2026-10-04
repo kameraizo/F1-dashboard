@@ -6,6 +6,7 @@ import GPCard from "../components/GPCard"
 import SectionHeading from "../components/SectionHeading"
 import CircuitAmbient from "../components/CircuitAmbient"
 import CountUp from "../components/CountUp"
+import { useSeason } from "../hooks/useSeason"
 import { getRaceStatus, RACE_STATUS } from "../utils/raceStatus"
 
 const teamColors = {
@@ -48,6 +49,7 @@ function Podium({ standings, onSelect }) {
 }
 
 function HomePage() {
+  const season = useSeason()
   const [drivers, setDrivers] = useState([])
   const [results, setResults] = useState([])
   const [races, setRaces] = useState([])
@@ -90,7 +92,7 @@ function HomePage() {
       <div className="home__hero">
         <CircuitAmbient />
         <div className="speed-lines" aria-hidden="true" />
-        <SectionHeading eyebrow="Championnat 2026" title="Top 3 pilotes" />
+        <SectionHeading eyebrow={season ? `Championnat ${season}` : "Championnat"} title="Top 3 pilotes" />
         <Podium standings={drivers.slice(0, 3)} onSelect={setSelectedDriver} />
       </div>
 

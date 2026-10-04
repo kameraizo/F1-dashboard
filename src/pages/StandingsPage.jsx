@@ -3,6 +3,7 @@ import DriverCard from '../components/DriverCard'
 import ConstructorCard from '../components/ConstructorCard'
 import SectionHeading from '../components/SectionHeading'
 import CountUp from '../components/CountUp'
+import { useSeason } from '../hooks/useSeason'
 import ApiError from '../components/ApiError'
 import { getDriverStandings, getConstructorStandings, getDriverResults, getApiErrorMessage } from '../services/api'
 
@@ -22,6 +23,7 @@ const teamColors = {
 }
 
 function StandingsPage() {
+  const season = useSeason()
   const [activeTab, setActiveTab] = useState('drivers')
   const [drivers, setDrivers] = useState([])
   const [constructors, setConstructors] = useState([])
@@ -59,7 +61,7 @@ function StandingsPage() {
   return (
     <div className="page standings">
       <SectionHeading
-        eyebrow="Classement 2026"
+        eyebrow={season ? `Classement ${season}` : 'Classement'}
         title={activeTab === 'drivers' ? 'Pilotes' : 'Constructeurs'}
       />
 

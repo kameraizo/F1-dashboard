@@ -13,7 +13,7 @@ registerSW({
     console.info('F1 Dashboard est disponible hors ligne.')
   },
   onRegisterError(error) {
-    console.error('Echec de l\'enregistrement du service worker', error)
+    console.error('Échec de l\'enregistrement du service worker', error)
   }
 })
 

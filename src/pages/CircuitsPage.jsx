@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { getRaces, getApiErrorMessage } from "../services/api"
 import SectionHeading from "../components/SectionHeading"
 import ApiError from "../components/ApiError"
+import { useSeason } from "../hooks/useSeason"
 
 const countryFlags = {
   Australia: 'au',
@@ -56,6 +57,7 @@ const circuitMaps = {
 }
 
 function CircuitsPage() {
+  const season = useSeason()
   const [races, setRaces] = useState([])
   const [selectedRace, setSelectedRace] = useState(null)
   const [error, setError] = useState(null)
@@ -74,7 +76,7 @@ function CircuitsPage() {
 
   return (
     <div className="page circuits">
-      <SectionHeading eyebrow="Saison 2026" title="Circuits" />
+      <SectionHeading eyebrow={season ? `Saison ${season}` : 'Saison'} title="Circuits" />
 
       {error && <ApiError message={error} />}
 

@@ -10,8 +10,8 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'F1 Dashboard',
-        short_name: 'F1 2026',
-        description: 'Classements pilotes et constructeurs, calendrier, circuits et resultats de la saison F1 2026 en temps reel.',
+        short_name: 'F1 Dashboard',
+        description: 'Classements pilotes et constructeurs, calendrier, circuits et résultats de la saison F1 en cours en temps réel.',
         lang: 'fr',
         theme_color: '#08090b',
         background_color: '#08090b',

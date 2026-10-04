@@ -1,10 +1,14 @@
+import { useSeason } from '../hooks/useSeason'
+
 function Footer() {
+  const season = useSeason()
+
   return (
     <footer className="pitwall-footer">
       <div className="kerb-divider" aria-hidden="true" />
       <div className="pitwall-footer__inner">
         <div className="pitwall-footer__row">
-          <p className="pitwall-footer__copy">© 2026 F1 Dashboard — Tous droits réservés</p>
+          <p className="pitwall-footer__copy">© {season ? `${season} ` : ''}F1 Dashboard — Tous droits réservés</p>
           <p className="pitwall-footer__credit">
             Site créé par{' '}
             <a href="#" className="pitwall-footer__link">L'Artisan Web</a>

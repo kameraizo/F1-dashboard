@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { getRaces, getRaceResults, getLastRaceResults, getApiErrorMessage } from '../services/api'
 import SectionHeading from '../components/SectionHeading'
 import ApiError from '../components/ApiError'
+import { useSeason } from '../hooks/useSeason'
 import { getRaceStatus, RACE_STATUS, RACE_STATUS_LABELS } from '../utils/raceStatus'
 
 function SeasonPage() {
+  const season = useSeason()
   const [races, setRaces] = useState([])
   const [lastResults, setLastResults] = useState(null)
   const [error, setError] = useState(null)
@@ -50,7 +52,7 @@ function SeasonPage() {
 
   return (
     <div className="page season">
-      <SectionHeading eyebrow="Saison 2026" title="Calendrier" />
+      <SectionHeading eyebrow={season ? `Saison ${season}` : 'Saison'} title="Calendrier" />
 
       {error && <ApiError message={error} />}
 

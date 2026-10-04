@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, NavLink } from "react-router-dom"
 import logo from "../assets/Logo-F1.png"
+import { useSeason } from "../hooks/useSeason"
 
 const navLinks = [
   { to: "/", label: "Accueil", end: true },
@@ -11,13 +12,14 @@ const navLinks = [
 
 function Navbar() {
   const [open, setOpen] = useState(false)
+  const season = useSeason()
 
   return (
     <nav className="pitwall-nav">
       <div className="pitwall-nav__inner">
         <Link className="pitwall-nav__brand" to="/" onClick={() => setOpen(false)}>
           <img src={logo} alt="F1 Dashboard" />
-          <span className="pitwall-nav__season">Saison 26</span>
+          <span className="pitwall-nav__season">{season ? `Saison ${season.slice(-2)}` : "Saison"}</span>
         </Link>
 
         <button
