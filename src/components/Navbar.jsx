@@ -1,5 +1,6 @@
 import { NavLink, Link, useLocation } from "react-router-dom"
 import { useSeason } from "../hooks/useSeason"
+import InstallButton from "./InstallButton"
 
 // Icônes 24×24, trait = currentColor (couleur héritée de l'onglet)
 const icons = {
@@ -84,6 +85,7 @@ function Navbar() {
           </nav>
 
           <SeasonReadout />
+          <InstallButton />
         </div>
       </header>
 

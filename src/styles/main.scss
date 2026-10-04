@@ -199,7 +199,11 @@ $nav-desktop: 1024px;
     padding: 0 clamp(1rem, 4vw, 2.5rem);
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.75rem;
+
+    @media (min-width: $nav-desktop) {
+      gap: 1.5rem;
+    }
   }
 
   // Logo en texte : étiquette "F1" (même plaque que .section-heading__tag) + nom
@@ -265,6 +269,19 @@ $nav-desktop: 1024px;
 
   @media (max-width: 379px) {
     &__readout > .pitwall-nav__readout-label:first-child {
+      display: none;
+    }
+  }
+
+  // Avec le bouton d'installation : on retire "Saison" puis le nom (le lien garde son aria-label)
+  @media (max-width: 479px) {
+    &__inner:has(.install-button) &__readout > .pitwall-nav__readout-label:first-child {
+      display: none;
+    }
+  }
+
+  @media (max-width: 359px) {
+    &__inner:has(.install-button) &__brand-name {
       display: none;
     }
   }
@@ -405,6 +422,213 @@ $nav-desktop: 1024px;
 @media (max-width: #{$nav-desktop - 1px}) {
   #root {
     padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Bouton "Installer l'app" (header) + instructions iOS
+// ---------------------------------------------------------------------------
+.install-button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--paper);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &__box {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 32px;
+    padding: 0 0.45rem;
+    border: 1px solid var(--hairline-strong);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    @include cut-corner(8px);
+    transition-property: border-color, background-color, transform;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+
+  // Label visible seulement quand le header a la place
+  &__label {
+    display: none;
+
+    @media (min-width: 1200px) {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    &__box {
+      padding: 0 0.75rem 0 0.6rem;
+    }
+  }
+
+  @media (hover: hover) {
+    &:hover &__box {
+      border-color: var(--race-red);
+      background: rgba(255, 30, 60, 0.08);
+    }
+  }
+
+  &:active &__box {
+    transform: scale(0.96);
+  }
+
+  // Même focus que les onglets : fond + cadre intérieur turquoise
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible &__box {
+    background: var(--carbon-700);
+    box-shadow: inset 0 0 0 2px var(--telemetry-cyan);
+  }
+}
+
+.install-dialog {
+  width: min(400px, calc(100vw - 2rem));
+  max-width: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--paper);
+
+  &::backdrop {
+    background: rgba(4, 5, 6, 0.8);
+  }
+
+  &[open] {
+    animation: scale-in 0.25s var(--ease);
+  }
+
+  &__content {
+    position: relative;
+    background: var(--carbon-800);
+    @include carbon-weave;
+    @include cut-corner(24px);
+    border: 1px solid var(--hairline-strong);
+    border-top: 3px solid var(--race-red);
+    padding: 1.6rem 1.5rem 1.5rem;
+  }
+
+  &__close {
+    position: absolute;
+    top: 0.4rem;
+    right: 1.4rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 15px;
+    cursor: pointer;
+    transition: color 150ms ease-out;
+
+    &:hover {
+      color: var(--paper);
+    }
+
+    &:focus-visible {
+      outline: none;
+      color: var(--paper);
+      background: var(--carbon-700);
+      box-shadow: inset 0 0 0 2px var(--telemetry-cyan);
+    }
+  }
+
+  &__eyebrow {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-mono);
+    font-style: italic;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  &__title {
+    margin: 0 0 1.25rem;
+    padding-right: 3rem;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: var(--paper);
+  }
+
+  &__steps {
+    counter-reset: step;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.8rem;
+
+    li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 2.1rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--muted);
+      text-wrap: pretty;
+
+      &::before {
+        content: counter(step, decimal-leading-zero);
+        position: absolute;
+        left: 0;
+        top: 0.15rem;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--race-red);
+      }
+    }
+
+    strong {
+      color: var(--paper);
+      font-weight: 600;
+    }
+  }
+
+  &__share {
+    width: 18px;
+    height: 18px;
+    margin: 0 0.25rem;
+    vertical-align: -3px;
+    fill: none;
+    stroke: var(--telemetry-cyan);
+    stroke-width: 1.75;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
   }
 }
 
