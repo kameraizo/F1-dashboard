@@ -49,7 +49,7 @@ function Podium({ standings, onSelect }) {
 }
 
 function HomePage() {
-  const season = useSeason()
+  const { season } = useSeason()
   const [drivers, setDrivers] = useState([])
   const [results, setResults] = useState([])
   const [races, setRaces] = useState([])

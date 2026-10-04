@@ -23,7 +23,7 @@ const teamColors = {
 }
 
 function StandingsPage() {
-  const season = useSeason()
+  const { season } = useSeason()
   const [activeTab, setActiveTab] = useState('drivers')
   const [drivers, setDrivers] = useState([])
   const [constructors, setConstructors] = useState([])

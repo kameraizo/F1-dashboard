@@ -170,135 +170,241 @@ body::after {
 // ---------------------------------------------------------------------------
 // Navbar
 // ---------------------------------------------------------------------------
+// Mobile first : barre haute compacte (logo + saison) et barre d'onglets en bas.
+// À partir de 1024px : les onglets passent dans la barre haute.
+$nav-desktop: 1024px;
+
+:root {
+  --nav-height: 48px;
+  --tab-bar-height: 58px;
+
+  @media (min-width: $nav-desktop) {
+    --nav-height: 56px;
+  }
+}
+
 .pitwall-nav {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(10, 11, 13, 0.92);
-  backdrop-filter: blur(10px);
+  padding-top: env(safe-area-inset-top);
+  background: rgba(8, 9, 11, 0.97);
   border-bottom: 1px solid var(--hairline);
   box-shadow: inset 0 3px 0 var(--race-red);
 
   &__inner {
     max-width: 1200px;
+    height: var(--nav-height);
     margin: 0 auto;
-    padding: 0.7rem clamp(1rem, 4vw, 2.5rem);
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
+  // Logo en texte : étiquette "F1" (même plaque que .section-heading__tag) + nom
   &__brand {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-
-    img {
-      height: 34px;
-    }
+    gap: 0.5rem;
+    min-height: 44px;
+    flex: none;
   }
 
-  &__season {
+  &__brand-tag {
     font-family: var(--font-mono);
     font-style: italic;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--race-red);
-    border: 1px solid var(--race-red-dim);
-    padding: 0.2rem 0.45rem;
-    @include cut-corner(4px);
-  }
-
-  &__toggle {
-    background: transparent;
-    border: 1px solid var(--hairline-strong);
-    padding: 0.5rem 0.6rem;
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-    cursor: pointer;
-
-    span {
-      width: 20px;
-      height: 2px;
-      background: var(--paper);
-      display: block;
-    }
-  }
-
-  &__links {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  &__link {
-    font-family: var(--font-body);
-    color: var(--muted);
-    text-transform: uppercase;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.06em;
-    padding: 0.5rem 0.85rem;
-    position: relative;
-    transition: color 0.2s var(--ease);
+    line-height: 1;
+    color: var(--carbon-950);
+    background: var(--race-red);
+    padding: 0.35rem 0.6rem 0.35rem 0.5rem;
+    @include cut-corner(6px);
+  }
 
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0.85rem;
-      right: 0.85rem;
-      bottom: 0.15rem;
-      height: 2px;
-      background: var(--race-red);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.25s var(--ease);
+  &__brand-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--paper);
+  }
+
+  // Les onglets du haut n'existent qu'en desktop
+  &__nav {
+    display: none;
+  }
+
+  // Ligne d'info façon en-tête de tableau de timing
+  &__readout {
+    margin: 0 0 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--muted);
+  }
+
+  &__readout-value {
+    color: var(--paper);
+    font-weight: 700;
+  }
+
+  &__readout-sep {
+    color: var(--muted-dim);
+  }
+
+  @media (max-width: 379px) {
+    &__readout > .pitwall-nav__readout-label:first-child {
+      display: none;
     }
+  }
 
+  @media (min-width: $nav-desktop) {
+    &__nav {
+      display: flex;
+      align-self: stretch;
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--hairline);
+    }
+  }
+}
+
+// Onglets (haut en desktop, bas en mobile) : colonnes de même largeur,
+// l'indicateur glisse d'une colonne à l'autre via --active-index.
+%nav-tabs {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
+%nav-indicator {
+  position: absolute;
+  left: 0;
+  height: 3px;
+  width: calc(100% / var(--tab-count));
+  background: var(--race-red);
+  transform: translateX(calc(var(--active-index) * 100%));
+  transition: transform 0.3s var(--ease);
+  pointer-events: none;
+}
+
+%nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
+  transition-property: color, background-color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+
+  @media (hover: hover) {
     &:hover {
       color: var(--paper);
     }
-
-    &.active {
-      color: var(--paper);
-
-      &::after {
-        transform: scaleX(1);
-      }
-    }
   }
 
-  @media (max-width: 860px) {
-    &__toggle {
-      display: flex;
-    }
+  &[aria-current='page'] {
+    color: var(--paper);
+  }
 
-    &__links {
-      display: none;
+  // Focus clavier : fond + cadre intérieur turquoise (pas d'outline, compatible avec toutes les formes)
+  &:focus-visible {
+    outline: none;
+    color: var(--paper);
+    background: var(--carbon-700);
+    box-shadow: inset 0 0 0 2px var(--telemetry-cyan);
+  }
+}
+
+.pitwall-nav__tabs {
+  @extend %nav-tabs;
+  height: 100%;
+
+  &-item {
+    @extend %nav-item;
+    padding: 0 1.1rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  // Collé au bord bas du header
+  &-indicator {
+    @extend %nav-indicator;
+    bottom: -1px;
+  }
+}
+
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(8, 9, 11, 0.98);
+  border-top: 1px solid var(--hairline);
+
+  @media (min-width: $nav-desktop) {
+    display: none;
+  }
+
+  &__tabs {
+    @extend %nav-tabs;
+    max-width: 560px;
+    margin: 0 auto;
+
+    &-item {
+      @extend %nav-item;
       flex-direction: column;
-      align-items: flex-start;
-      width: 100%;
-      padding-top: 0.75rem;
-      gap: 0;
+      gap: 0.3rem;
+      min-height: var(--tab-bar-height);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
 
-      &.is-open {
-        display: flex;
+      &:active {
+        transform: scale(0.96);
       }
     }
 
-    &__link {
-      width: 100%;
-      padding: 0.7rem 0.2rem;
-
-      &::after {
-        left: 0.2rem;
-        right: auto;
-        width: 24px;
-      }
+    &-icon {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
     }
+
+    // En écho à la barre rouge du haut d'écran
+    &-indicator {
+      @extend %nav-indicator;
+      top: -1px;
+    }
+  }
+}
+
+// Place réservée sous le contenu pour la barre d'onglets mobile
+@media (max-width: #{$nav-desktop - 1px}) {
+  #root {
+    padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
   }
 }
 

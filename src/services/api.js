@@ -47,16 +47,17 @@ export const getDriverResults = async (driverId) => {
   const response = await api.get(`/current/drivers/${driverId}/results.json`)
   return response.data
 }
-// Saison du calendrier en cours, mise en cache (un seul appel par session, relancé en cas d'échec)
-let seasonPromise = null
-export const getCurrentSeason = () => {
-  seasonPromise ??= getRaces()
-    .then(data => data.MRData.RaceTable.season)
+// Calendrier de la saison en cours ({ season, Races }), mis en cache
+// (un seul appel par session, relancé en cas d'échec)
+let calendarPromise = null
+export const getSeasonCalendar = () => {
+  calendarPromise ??= getRaces()
+    .then(data => data.MRData.RaceTable)
     .catch(err => {
-      seasonPromise = null
+      calendarPromise = null
       throw err
     })
-  return seasonPromise
+  return calendarPromise
 }
 export const getLastRaceResults = async () => {
   const response = await api.get('/current/last/results.json')

@@ -57,7 +57,7 @@ const circuitMaps = {
 }
 
 function CircuitsPage() {
-  const season = useSeason()
+  const { season } = useSeason()
   const [races, setRaces] = useState([])
   const [selectedRace, setSelectedRace] = useState(null)
   const [error, setError] = useState(null)

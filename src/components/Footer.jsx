@@ -1,7 +1,7 @@
 import { useSeason } from '../hooks/useSeason'
 
 function Footer() {
-  const season = useSeason()
+  const { season } = useSeason()
 
   return (
     <footer className="pitwall-footer">

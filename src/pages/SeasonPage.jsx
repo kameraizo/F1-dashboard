@@ -6,7 +6,7 @@ import { useSeason } from '../hooks/useSeason'
 import { getRaceStatus, RACE_STATUS, RACE_STATUS_LABELS } from '../utils/raceStatus'
 
 function SeasonPage() {
-  const season = useSeason()
+  const { season } = useSeason()
   const [races, setRaces] = useState([])
   const [lastResults, setLastResults] = useState(null)
   const [error, setError] = useState(null)
